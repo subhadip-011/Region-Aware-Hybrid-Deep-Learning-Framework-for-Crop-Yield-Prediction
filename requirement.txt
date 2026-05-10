@@ -1,0 +1,53 @@
+# requirements.txt
+
+# Core dependencies
+python>=3.8
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.0
+
+# Deep Learning
+tensorflow==2.13.0
+keras==2.13.1
+
+# Gradient Boosting
+xgboost==1.7.6
+
+# Visualization
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.15.0
+
+# Explainability
+shap==0.42.1
+lime==0.2.0.1
+
+# Web App
+streamlit==1.25.0
+streamlit-option-menu==0.3.6
+
+# Utilities
+joblib==1.3.2
+pyyaml==6.0
+python-dotenv==1.0.0
+
+# API and Deployment
+fastapi==0.100.0
+uvicorn==0.23.1
+gunicorn==20.1.0
+
+# Data Validation
+pydantic==2.1.1
+great-expectations==0.17.15
+
+# Monitoring
+mlflow==2.5.0
+wandb==0.15.7
+
+# Testing
+pytest==7.4.0
+pytest-cov==4.1.0
+
+# Documentation
+mkdocs==1.5.2
+mkdocs-material==9.2.6
