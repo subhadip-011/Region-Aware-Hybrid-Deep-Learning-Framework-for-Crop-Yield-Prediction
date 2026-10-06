@@ -20,9 +20,9 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import Adam
 
 
-# =========================================================
+#
 # LOAD DATA
-# =========================================================
+#
 
 print("\n" + "=" * 70)
 print("ARTIFICIAL NEURAL NETWORK TRAINING")
@@ -34,9 +34,9 @@ processed_data = pd.read_csv(
 
 print(f"Dataset Shape: {processed_data.shape}")
 
-# =========================================================
+#
 # FEATURES AND TARGET
-# =========================================================
+#
 
 feature_columns = [
     col for col in processed_data.columns
@@ -47,9 +47,9 @@ X = processed_data[feature_columns].values
 
 y = processed_data['yield_kg_ha'].values
 
-# =========================================================
+#
 # TRAIN TEST SPLIT
-# =========================================================
+#
 
 X_train, X_temp, y_train, y_temp = train_test_split(
     X,
@@ -65,17 +65,17 @@ X_val, X_test, y_val, y_test = train_test_split(
     random_state=42
 )
 
-# =========================================================
+#
 # HANDLE NaN VALUES
-# =========================================================
+#
 
 X_train = np.nan_to_num(X_train)
 X_val = np.nan_to_num(X_val)
 X_test = np.nan_to_num(X_test)
 
-# =========================================================
+#
 # BUILD ANN MODEL
-# =========================================================
+#
 
 model = Sequential()
 
@@ -92,9 +92,9 @@ model.add(Dense(32, activation='relu'))
 # Output Layer
 model.add(Dense(1, activation='linear'))
 
-# =========================================================
+#
 # COMPILE MODEL
-# =========================================================
+#
 
 model.compile(
     optimizer=Adam(learning_rate=0.001),
@@ -104,9 +104,9 @@ model.compile(
 
 model.summary()
 
-# =========================================================
+#
 # EARLY STOPPING
-# =========================================================
+#
 
 early_stop = EarlyStopping(
     monitor='val_loss',
@@ -114,9 +114,9 @@ early_stop = EarlyStopping(
     restore_best_weights=True
 )
 
-# =========================================================
+#
 # TRAIN MODEL
-# =========================================================
+#
 
 print("\nTraining ANN Model...")
 
@@ -124,23 +124,23 @@ history = model.fit(
     X_train,
     y_train,
     validation_data=(X_val, y_val),
-    epochs=200,
+    epochs=50,
     batch_size=32,
     callbacks=[early_stop],
     verbose=1
 )
 
-# =========================================================
+#
 # PREDICTIONS
-# =========================================================
+#
 
 train_pred = model.predict(X_train).flatten()
 val_pred = model.predict(X_val).flatten()
 test_pred = model.predict(X_test).flatten()
 
-# =========================================================
+#
 # EVALUATION FUNCTION
-# =========================================================
+#
 
 
 def evaluate(y_true, y_pred, dataset_name):
@@ -162,17 +162,17 @@ def evaluate(y_true, y_pred, dataset_name):
     return mae, rmse, r2
 
 
-# =========================================================
+#
 # EVALUATE MODEL
-# =========================================================
+#
 
 train_metrics = evaluate(y_train, train_pred, 'TRAIN')
 val_metrics = evaluate(y_val, val_pred, 'VALIDATION')
 test_metrics = evaluate(y_test, test_pred, 'TEST')
 
-# =========================================================
+#
 # OVERFITTING CHECK
-# =========================================================
+#
 
 train_r2 = train_metrics[2]
 test_r2 = test_metrics[2]
@@ -186,9 +186,9 @@ if difference > 0.15:
 else:
     print("✅ Good Generalization")
 
-# =========================================================
+#
 # SAVE MODEL
-# =========================================================
+#
 
 os.makedirs('models/saved', exist_ok=True)
 

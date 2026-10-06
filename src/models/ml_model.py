@@ -45,9 +45,9 @@ class MLModelTrainer:
         self.models = {}
         self.results = {}
 
-    # =====================================================
+    #
     # EVALUATE MODEL
-    # =====================================================
+    #
 
     def evaluate_model(self, model):
         """Calculate evaluation metrics"""
@@ -72,9 +72,9 @@ class MLModelTrainer:
 
         return metrics
 
-    # =====================================================
+    #
     # PRINT METRICS
-    # =====================================================
+    #
 
     def print_metrics(self, model_name, metrics):
         """Print model metrics"""
@@ -103,9 +103,9 @@ class MLModelTrainer:
         if metrics['train_r2'] - metrics['test_r2'] > 0.15:
             print("\n⚠️ Warning: Possible Overfitting Detected")
 
-    # =====================================================
+    #
     # LINEAR REGRESSION
-    # =====================================================
+    #
 
     def train_linear_regression(self):
 
@@ -127,9 +127,9 @@ class MLModelTrainer:
 
         self.print_metrics('Linear Regression', metrics)
 
-    # =====================================================
+    #
     # DECISION TREE
-    # =====================================================
+    #
 
     def train_decision_tree(self):
 
@@ -155,9 +155,9 @@ class MLModelTrainer:
 
         self.print_metrics('Decision Tree', metrics)
 
-    # =====================================================
+    #
     # RANDOM FOREST
-    # =====================================================
+    #
 
     def train_random_forest(self):
 
@@ -201,9 +201,9 @@ class MLModelTrainer:
             print("\nTop 10 Important Features:")
             print(importance_df.head(10))
 
-    # =====================================================
+    #
     # XGBOOST
-    # =====================================================
+    #
 
     def train_xgboost(self):
 
@@ -234,9 +234,9 @@ class MLModelTrainer:
 
         self.print_metrics('XGBoost', metrics)
 
-    # =====================================================
+    #
     # SUPPORT VECTOR REGRESSOR
-    # =====================================================
+    #
 
     def train_svr(self):
 
@@ -262,9 +262,9 @@ class MLModelTrainer:
 
         self.print_metrics('SVR', metrics)
 
-    # =====================================================
+    #
     # COMPARE MODELS
-    # =====================================================
+    #
 
     def compare_models(self):
 
@@ -299,9 +299,9 @@ class MLModelTrainer:
 
         return comparison_df
 
-    # =====================================================
+    #
     # SAVE MODELS
-    # =====================================================
+    #
 
     def save_models(self, save_path='models/saved/'):
         """Save trained models"""
@@ -335,9 +335,9 @@ class MLModelTrainer:
         print(f"📁 Location: {best_model_path}")
 
 
-# =========================================================
+#
 # MAIN EXECUTION
-# =========================================================
+#
 
 if __name__ == '__main__':
 

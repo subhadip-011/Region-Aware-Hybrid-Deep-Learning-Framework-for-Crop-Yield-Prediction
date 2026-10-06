@@ -15,9 +15,9 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import load_model
 
 
-# =========================================================
+#
 # LOAD DATA
-# =========================================================
+#
 
 print("\n" + "=" * 70)
 print("HYBRID MODEL")
@@ -36,9 +36,9 @@ X = processed_data[feature_columns].values
 
 y = processed_data['yield_kg_ha'].values
 
-# =========================================================
+#
 # SPLIT DATA
-# =========================================================
+#
 
 X_train, X_temp, y_train, y_temp = train_test_split(
     X,
@@ -54,15 +54,15 @@ X_val, X_test, y_val, y_test = train_test_split(
     random_state=42
 )
 
-# =========================================================
+#
 # HANDLE NaN VALUES
-# =========================================================
+#
 
 X_test = np.nan_to_num(X_test)
 
-# =========================================================
+#
 # LOAD MODELS
-# =========================================================
+#
 
 rf_model = joblib.load(
     'models/saved/random_forest.pkl'
@@ -74,26 +74,26 @@ ann_model = load_model(
 
 print("✅ Models Loaded Successfully")
 
-# =========================================================
+#
 # PREDICTIONS
-# =========================================================
+#
 
 rf_predictions = rf_model.predict(X_test)
 
 ann_predictions = ann_model.predict(X_test).flatten()
 
-# =========================================================
+#
 # HYBRID PREDICTION
-# =========================================================
+#
 
 hybrid_predictions = (
     0.5 * rf_predictions +
     0.5 * ann_predictions
 )
 
-# =========================================================
+#
 # EVALUATE HYBRID MODEL
-# =========================================================
+#
 
 mae = mean_absolute_error(y_test, hybrid_predictions)
 

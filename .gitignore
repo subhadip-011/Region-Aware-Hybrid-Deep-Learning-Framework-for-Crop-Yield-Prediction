@@ -1,4 +1,18 @@
+myenv/
+venv/
+.venv/
+env/
+
+__pycache__/
+*.py[cod]
+
+.ipynb_checkpoints/
+
+data/raw/
+
+.env
 # Byte-compiled / optimized / DLL files
+
 __pycache__/
 *.py[codz]
 *$py.class
@@ -216,3 +230,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+

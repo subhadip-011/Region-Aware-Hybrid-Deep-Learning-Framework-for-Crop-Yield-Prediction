@@ -25,9 +25,9 @@ class DataPreprocessor:
         self.label_encoders = {}
         self.feature_columns = None
 
-    # =========================================================
+    #
     # LOAD DATA
-    # =========================================================
+    #
 
     def load_data(self):
         """Load dataset"""
@@ -44,9 +44,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # EXPLORE DATA
-    # =========================================================
+    #
 
     def explore_data(self):
         """Explore dataset"""
@@ -64,9 +64,9 @@ class DataPreprocessor:
         print("\nFirst 5 Rows:")
         print(self.data.head())
 
-    # =========================================================
+    #
     # HANDLE MISSING VALUES
-    # =========================================================
+    #
 
     def handle_missing_values(self):
         """Fill missing values"""
@@ -102,9 +102,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # REMOVE DUPLICATES
-    # =========================================================
+    #
 
     def remove_duplicates(self):
         """Remove duplicate rows"""
@@ -123,9 +123,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # HANDLE OUTLIERS
-    # =========================================================
+    #
 
     def handle_outliers(self):
         """Handle outliers using IQR method"""
@@ -162,9 +162,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # ENCODE CATEGORICAL VARIABLES
-    # =========================================================
+    #
 
     def encode_categorical(self):
         """Encode categorical variables"""
@@ -193,9 +193,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # CREATE REGION FEATURES
-    # =========================================================
+    #
 
     def create_region_features(self):
         """Create agro climatic zone features"""
@@ -232,9 +232,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # FEATURE ENGINEERING
-    # =========================================================
+    #
 
     def feature_engineering(self):
         """Create advanced features"""
@@ -293,9 +293,9 @@ class DataPreprocessor:
 
         return self.data
 
-    # =========================================================
+    #
     # PREPARE FEATURES
-    # =========================================================
+    #
 
     def prepare_features(self):
         """Prepare final feature list"""
@@ -346,9 +346,9 @@ class DataPreprocessor:
 
         return self.data[self.feature_columns]
 
-    # =========================================================
+    #
     # SCALE FEATURES
-    # =========================================================
+    #
 
     def scale_features(self, X):
         """Scale features safely"""
@@ -372,9 +372,9 @@ class DataPreprocessor:
 
         return X_scaled
 
-    # =========================================================
+    #
     # SPLIT DATA
-    # =========================================================
+    #
 
     def split_data(self, X, y, test_size=0.2, val_size=0.1):
         """Split dataset"""
@@ -405,9 +405,9 @@ class DataPreprocessor:
 
         return X_train, X_val, X_test, y_train, y_val, y_test
 
-    # =========================================================
+    #
     # SAVE ARTIFACTS
-    # =========================================================
+    #
 
     def save_artifacts(self, save_path='models/saved/'):
         """Save scaler and encoders"""
@@ -420,9 +420,9 @@ class DataPreprocessor:
 
         print("✅ Saved Preprocessing Artifacts")
 
-    # =========================================================
+    #
     # COMPLETE PIPELINE
-    # =========================================================
+    #
 
     def run_pipeline(self):
         """Run complete preprocessing pipeline"""
@@ -506,9 +506,9 @@ class DataPreprocessor:
         )
 
 
-# =========================================================
+#
 # MAIN
-# =========================================================
+#
 
 if __name__ == '__main__':
 
