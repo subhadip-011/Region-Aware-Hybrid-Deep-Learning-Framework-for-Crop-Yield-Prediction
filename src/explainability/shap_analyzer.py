@@ -16,9 +16,9 @@ class SHAPExplainer:
     for Explainable Crop Yield Prediction
     """
 
-    # =====================================================
+    #
     # INITIALIZATION
-    # =====================================================
+    #
 
     def __init__(self, model, feature_names):
 
@@ -32,9 +32,9 @@ class SHAPExplainer:
 
         self.X_data = None
 
-    # =====================================================
+    #
     # CREATE EXPLAINER
-    # =====================================================
+    #
 
     def create_explainer(
         self,
@@ -85,9 +85,9 @@ class SHAPExplainer:
 
             raise e
 
-    # =====================================================
+    #
     # CALCULATE SHAP VALUES
-    # =====================================================
+    #
 
     def calculate_shap_values(self, X):
         """
@@ -123,9 +123,9 @@ class SHAPExplainer:
 
             raise e
 
-    # =====================================================
+    #
     # SUMMARY PLOT
-    # =====================================================
+    #
 
     def summary_plot(self, save_path=None):
         """
@@ -165,9 +165,9 @@ class SHAPExplainer:
                 f"Error generating summary plot: {e}"
             )
 
-    # =====================================================
+    #
     # BAR PLOT
-    # =====================================================
+    #
 
     def bar_plot(self, save_path=None):
         """
@@ -208,9 +208,9 @@ class SHAPExplainer:
                 f"Error generating bar plot: {e}"
             )
 
-    # =====================================================
+    #
     # WATERFALL PLOT
-    # =====================================================
+    #
 
     def waterfall_plot(
         self,
@@ -272,9 +272,9 @@ class SHAPExplainer:
                 f"Error generating waterfall plot: {e}"
             )
 
-    # =====================================================
+    #
     # DEPENDENCE PLOT
-    # =====================================================
+    #
 
     def dependence_plot(
         self,
@@ -317,9 +317,9 @@ class SHAPExplainer:
                 f"Error generating dependence plot: {e}"
             )
 
-    # =====================================================
+    #
     # FORCE PLOT
-    # =====================================================
+    #
 
     def force_plot(self, sample_idx):
         """
@@ -347,9 +347,9 @@ class SHAPExplainer:
                 f"Error generating force plot: {e}"
             )
 
-    # =====================================================
+    #
     # FEATURE IMPORTANCE
-    # =====================================================
+    #
 
     def feature_importance_df(self):
         """
@@ -383,9 +383,9 @@ class SHAPExplainer:
                 f"Error generating feature importance: {e}"
             )
 
-    # =====================================================
+    #
     # INTERACTIVE FEATURE IMPORTANCE
-    # =====================================================
+    #
 
     def interactive_importance_plot(
         self,
@@ -427,9 +427,9 @@ class SHAPExplainer:
                 f"Error generating interactive plot: {e}"
             )
 
-    # =====================================================
+    #
     # SINGLE PREDICTION ANALYSIS
-    # =====================================================
+    #
 
     def analyze_prediction(
         self,
@@ -517,9 +517,9 @@ class SHAPExplainer:
                 f"Error analyzing prediction: {e}"
             )
 
-    # =====================================================
+    #
     # SAVE FEATURE IMPORTANCE CSV
-    # =====================================================
+    #
 
     def save_feature_importance(
         self,
@@ -550,21 +550,21 @@ class SHAPExplainer:
             logger.error(
                 f"Error saving feature importance: {e}"
             )
-# =====================================================
+#
 # MAIN EXECUTION
-# =====================================================
-# =====================================================
+#
+#
 # MAIN EXECUTION
-# =====================================================
+#
 
 if __name__ == "__main__":
 
     import os
     import joblib
 
-    # -------------------------------------------------
+    #
     # VISUALIZATION DIRECTORY
-    # -------------------------------------------------
+    #
 
     VISUALIZATION_DIR = 'notebooks/visualizations'
 
@@ -577,9 +577,9 @@ if __name__ == "__main__":
         "Starting SHAP analysis..."
     )
 
-    # -------------------------------------------------
+    #
     # LOAD DATA
-    # -------------------------------------------------
+    #
 
     data = pd.read_csv(
         'data/processed/processed_data.csv'
@@ -589,9 +589,9 @@ if __name__ == "__main__":
         f"Dataset loaded successfully: {data.shape}"
     )
 
-    # -------------------------------------------------
+    #
     # FEATURES
-    # -------------------------------------------------
+    #
 
     X = data.drop(
         columns=['yield_kg_ha']
@@ -606,9 +606,9 @@ if __name__ == "__main__":
         f"Feature matrix shape: {X.shape}"
     )
 
-    # -------------------------------------------------
+    #
     # LOAD MODEL
-    # -------------------------------------------------
+    #
 
     model = joblib.load(
         'models/saved/random_forest.pkl'
@@ -618,9 +618,9 @@ if __name__ == "__main__":
         "Random Forest model loaded successfully"
     )
 
-    # -------------------------------------------------
+    #
     # CREATE SHAP EXPLAINER
-    # -------------------------------------------------
+    #
 
     explainer = SHAPExplainer(
         model=model,
@@ -639,9 +639,9 @@ if __name__ == "__main__":
         "SHAP explainer created successfully"
     )
 
-    # -------------------------------------------------
+    #
     # SAMPLE DATA FOR SHAP
-    # -------------------------------------------------
+    #
 
     X_sample = X.sample(
         500,
@@ -652,9 +652,9 @@ if __name__ == "__main__":
         f"Using sample size: {len(X_sample)}"
     )
 
-    # -------------------------------------------------
+    #
     # CALCULATE SHAP VALUES
-    # -------------------------------------------------
+    #
 
     explainer.calculate_shap_values(
         X_sample
@@ -664,9 +664,9 @@ if __name__ == "__main__":
         "SHAP values calculated successfully"
     )
 
-    # -------------------------------------------------
+    #
     # SUMMARY PLOT
-    # -------------------------------------------------
+    #
 
     explainer.summary_plot(
         save_path=(
@@ -679,9 +679,9 @@ if __name__ == "__main__":
         "SHAP summary plot saved"
     )
 
-    # -------------------------------------------------
+    #
     # BAR PLOT
-    # -------------------------------------------------
+    #
 
     explainer.bar_plot(
         save_path=(
@@ -694,9 +694,9 @@ if __name__ == "__main__":
         "SHAP bar plot saved"
     )
 
-    # -------------------------------------------------
+    #
     # DEPENDENCE PLOT
-    # -------------------------------------------------
+    #
 
     top_feature = X.columns[0]
 
@@ -713,9 +713,9 @@ if __name__ == "__main__":
         f"{top_feature}"
     )
 
-    # -------------------------------------------------
+    #
     # FEATURE IMPORTANCE
-    # -------------------------------------------------
+    #
 
     importance_df = (
         explainer.feature_importance_df()
@@ -733,9 +733,9 @@ if __name__ == "__main__":
         importance_df.head(10)
     )
 
-    # -------------------------------------------------
+    #
     # SAVE FEATURE IMPORTANCE
-    # -------------------------------------------------
+    #
 
     importance_df.to_csv(
         f'{VISUALIZATION_DIR}/'
@@ -747,9 +747,9 @@ if __name__ == "__main__":
         "SHAP feature importance CSV saved"
     )
 
-    # -------------------------------------------------
+    #
     # SINGLE PREDICTION ANALYSIS
-    # -------------------------------------------------
+    #
 
     sample_idx = 0
 
@@ -767,9 +767,9 @@ if __name__ == "__main__":
         "Single prediction analysis completed"
     )
 
-    # -------------------------------------------------
+    #
     # WATERFALL PLOT
-    # -------------------------------------------------
+    #
 
     explainer.waterfall_plot(
         sample_idx=sample_idx,
@@ -784,9 +784,9 @@ if __name__ == "__main__":
         "Waterfall plot generated"
     )
 
-    # -------------------------------------------------
+    #
     # SAVE INTERACTIVE IMPORTANCE PLOT
-    # -------------------------------------------------
+    #
 
     explainer.interactive_importance_plot()
 
@@ -794,9 +794,9 @@ if __name__ == "__main__":
         "Interactive SHAP plot generated"
     )
 
-    # -------------------------------------------------
+    #
     # FINAL SUCCESS MESSAGE
-    # -------------------------------------------------
+    #
 
     print("\n" + "=" * 70)
 

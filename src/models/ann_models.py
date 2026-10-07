@@ -182,9 +182,9 @@ difference = train_r2 - test_r2
 print(f"\nTrain-Test Difference: {difference:.4f}")
 
 if difference > 0.15:
-    print("⚠️ Possible Overfitting Detected")
+    print(" Possible Overfitting Detected")
 else:
-    print("✅ Good Generalization")
+    print("Good Generalization")
 
 #
 # SAVE MODEL
@@ -194,8 +194,8 @@ os.makedirs('models/saved', exist_ok=True)
 
 model.save('models/saved/ann_model.keras')
 
-print("\n✅ ANN Model Saved")
-print("📁 models/saved/ann_model.keras")
+print("\n ANN Model Saved")
+print("models/saved/ann_model.keras")
 
 print("\n" + "=" * 70)
 print("ANN TRAINING COMPLETED")

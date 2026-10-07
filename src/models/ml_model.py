@@ -1,17 +1,15 @@
-# Fixed Complete ML Training Pipeline
 # src/models/ml_models.py
 
+import os
+import time
+import joblib
 import numpy as np
 import pandas as pd
-import joblib
-import time
-import os
 
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
-from xgboost import XGBRegressor
 
 from sklearn.metrics import (
     mean_absolute_error,
@@ -19,22 +17,52 @@ from sklearn.metrics import (
     r2_score
 )
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import (
+    train_test_split,
+    RandomizedSearchCV
+)
+
+from xgboost import XGBRegressor
 
 
 class MLModelTrainer:
     """
     Train and evaluate machine learning models
+    for crop yield prediction.
     """
 
-    def __init__(self, X_train, X_val, X_test,
-                 y_train, y_val, y_test,
-                 feature_names=None):
+    def __init__(
+        self,
+        X_train,
+        X_val,
+        X_test,
+        y_train,
+        y_val,
+        y_test,
+        feature_names=None
+    ):
 
-        # Safety against NaN and infinite values
-        self.X_train = np.nan_to_num(X_train)
-        self.X_val = np.nan_to_num(X_val)
-        self.X_test = np.nan_to_num(X_test)
+        # Handle NaN and infinite values
+        self.X_train = np.nan_to_num(
+            X_train,
+            nan=0.0,
+            posinf=0.0,
+            neginf=0.0
+        )
+
+        self.X_val = np.nan_to_num(
+            X_val,
+            nan=0.0,
+            posinf=0.0,
+            neginf=0.0
+        )
+
+        self.X_test = np.nan_to_num(
+            X_test,
+            nan=0.0,
+            posinf=0.0,
+            neginf=0.0
+        )
 
         self.y_train = y_train
         self.y_val = y_val
@@ -45,68 +73,149 @@ class MLModelTrainer:
         self.models = {}
         self.results = {}
 
-    #
-    # EVALUATE MODEL
-    #
-
+    # Model evaluation
     def evaluate_model(self, model):
-        """Calculate evaluation metrics"""
+        """
+        Calculate Train, Validation and Test metrics.
+        """
 
         y_train_pred = model.predict(self.X_train)
         y_val_pred = model.predict(self.X_val)
         y_test_pred = model.predict(self.X_test)
 
         metrics = {
-            'train_mae': mean_absolute_error(self.y_train, y_train_pred),
-            'train_rmse': np.sqrt(mean_squared_error(self.y_train, y_train_pred)),
-            'train_r2': r2_score(self.y_train, y_train_pred),
+            'train_mae': mean_absolute_error(
+                self.y_train,
+                y_train_pred
+            ),
 
-            'val_mae': mean_absolute_error(self.y_val, y_val_pred),
-            'val_rmse': np.sqrt(mean_squared_error(self.y_val, y_val_pred)),
-            'val_r2': r2_score(self.y_val, y_val_pred),
+            'train_rmse': np.sqrt(
+                mean_squared_error(
+                    self.y_train,
+                    y_train_pred
+                )
+            ),
 
-            'test_mae': mean_absolute_error(self.y_test, y_test_pred),
-            'test_rmse': np.sqrt(mean_squared_error(self.y_test, y_test_pred)),
-            'test_r2': r2_score(self.y_test, y_test_pred)
+            'train_r2': r2_score(
+                self.y_train,
+                y_train_pred
+            ),
+
+            'val_mae': mean_absolute_error(
+                self.y_val,
+                y_val_pred
+            ),
+
+            'val_rmse': np.sqrt(
+                mean_squared_error(
+                    self.y_val,
+                    y_val_pred
+                )
+            ),
+
+            'val_r2': r2_score(
+                self.y_val,
+                y_val_pred
+            ),
+
+            'test_mae': mean_absolute_error(
+                self.y_test,
+                y_test_pred
+            ),
+
+            'test_rmse': np.sqrt(
+                mean_squared_error(
+                    self.y_test,
+                    y_test_pred
+                )
+            ),
+
+            'test_r2': r2_score(
+                self.y_test,
+                y_test_pred
+            )
         }
 
         return metrics
 
-    #
-    # PRINT METRICS
-    #
-
+    # Print model metrics
     def print_metrics(self, model_name, metrics):
-        """Print model metrics"""
 
-        print("\n" + "=" * 60)
+        print("\n" + "=" * 65)
         print(f"{model_name} PERFORMANCE")
-        print("=" * 60)
+        print("=" * 65)
 
-        print(f"Train MAE  : {metrics['train_mae']:.2f}")
-        print(f"Train RMSE : {metrics['train_rmse']:.2f}")
-        print(f"Train R²   : {metrics['train_r2']:.4f}")
+        print(
+            f"Train MAE       : "
+            f"{metrics['train_mae']:.2f}"
+        )
+
+        print(
+            f"Train RMSE      : "
+            f"{metrics['train_rmse']:.2f}"
+        )
+
+        print(
+            f"Train R²        : "
+            f"{metrics['train_r2']:.4f}"
+        )
 
         print()
 
-        print(f"Validation MAE  : {metrics['val_mae']:.2f}")
-        print(f"Validation RMSE : {metrics['val_rmse']:.2f}")
-        print(f"Validation R²   : {metrics['val_r2']:.4f}")
+        print(
+            f"Validation MAE  : "
+            f"{metrics['val_mae']:.2f}"
+        )
+
+        print(
+            f"Validation RMSE : "
+            f"{metrics['val_rmse']:.2f}"
+        )
+
+        print(
+            f"Validation R²   : "
+            f"{metrics['val_r2']:.4f}"
+        )
 
         print()
 
-        print(f"Test MAE  : {metrics['test_mae']:.2f}")
-        print(f"Test RMSE : {metrics['test_rmse']:.2f}")
-        print(f"Test R²   : {metrics['test_r2']:.4f}")
+        print(
+            f"Test MAE        : "
+            f"{metrics['test_mae']:.2f}"
+        )
+
+        print(
+            f"Test RMSE       : "
+            f"{metrics['test_rmse']:.2f}"
+        )
+
+        print(
+            f"Test R²         : "
+            f"{metrics['test_r2']:.4f}"
+        )
 
         # Overfitting detection
-        if metrics['train_r2'] - metrics['test_r2'] > 0.15:
-            print("\n⚠️ Warning: Possible Overfitting Detected")
+        train_test_gap = (
+            metrics['train_r2']
+            - metrics['test_r2']
+        )
 
-    #
-    # LINEAR REGRESSION
-    #
+        print(
+            f"\nTrain-Test R² Difference : "
+            f"{train_test_gap:.4f}"
+        )
 
+        if train_test_gap > 0.15:
+            print(
+                "Warning: Possible "
+                "Overfitting Detected"
+            )
+        else:
+            print(
+                "Generalization looks reasonable"
+            )
+
+    # Linear Regression
     def train_linear_regression(self):
 
         print("\nTraining Linear Regression...")
@@ -115,7 +224,10 @@ class MLModelTrainer:
 
         model = LinearRegression()
 
-        model.fit(self.X_train, self.y_train)
+        model.fit(
+            self.X_train,
+            self.y_train
+        )
 
         training_time = time.time() - start_time
 
@@ -125,12 +237,12 @@ class MLModelTrainer:
         self.models['Linear Regression'] = model
         self.results['Linear Regression'] = metrics
 
-        self.print_metrics('Linear Regression', metrics)
+        self.print_metrics(
+            'Linear Regression',
+            metrics
+        )
 
-    #
-    # DECISION TREE
-    #
-
+    # Decision Tree
     def train_decision_tree(self):
 
         print("\nTraining Decision Tree...")
@@ -140,10 +252,14 @@ class MLModelTrainer:
         model = DecisionTreeRegressor(
             max_depth=10,
             min_samples_split=5,
+            min_samples_leaf=2,
             random_state=42
         )
 
-        model.fit(self.X_train, self.y_train)
+        model.fit(
+            self.X_train,
+            self.y_train
+        )
 
         training_time = time.time() - start_time
 
@@ -153,39 +269,88 @@ class MLModelTrainer:
         self.models['Decision Tree'] = model
         self.results['Decision Tree'] = metrics
 
-        self.print_metrics('Decision Tree', metrics)
+        self.print_metrics(
+            'Decision Tree',
+            metrics
+        )
 
-    #
-    # RANDOM FOREST
-    #
-
+    # Optimized Random Forest
     def train_random_forest(self):
 
-        print("\nTraining Random Forest...")
+        print("\nTraining Optimized Random Forest...")
 
         start_time = time.time()
 
-        model = RandomForestRegressor(
-            n_estimators=200,
-            max_depth=15,
-            min_samples_split=5,
+        # Random Forest hyperparameter search space
+        param_distributions = {
+            'n_estimators': [200, 300, 400],
+            'max_depth': [10, 15, 20, None],
+            'min_samples_split': [2, 5, 10],
+            'min_samples_leaf': [1, 2, 4],
+            'max_features': [0.7, 1.0, 'sqrt'],
+            'max_samples': [0.8, 1.0],
+            'bootstrap': [True]
+        }
+
+        # Base Random Forest model
+        rf = RandomForestRegressor(
             random_state=42,
-            n_jobs=-1
+            n_jobs=1
         )
 
-        model.fit(self.X_train, self.y_train)
+        # Faster hyperparameter optimization
+        search = RandomizedSearchCV(
+            estimator=rf,
+            param_distributions=param_distributions,
+            n_iter=10,
+            scoring='r2',
+            cv=3,
+            random_state=42,
+            n_jobs=-1,
+            verbose=1,
+            return_train_score=False
+        )
+
+        print(
+            "\nSearching for the best "
+            "Random Forest parameters..."
+        )
+
+        search.fit(
+            self.X_train,
+            self.y_train
+        )
+
+        model = search.best_estimator_
 
         training_time = time.time() - start_time
 
+        print("\nBest Random Forest Parameters:")
+
+        for parameter, value in search.best_params_.items():
+            print(
+                f"{parameter:20s}: {value}"
+            )
+
+        print(
+            f"\nBest 3-Fold CV R²: "
+            f"{search.best_score_:.4f}"
+        )
+
         metrics = self.evaluate_model(model)
+
         metrics['training_time'] = training_time
+        metrics['cv_r2'] = search.best_score_
 
         self.models['Random Forest'] = model
         self.results['Random Forest'] = metrics
 
-        self.print_metrics('Random Forest', metrics)
+        self.print_metrics(
+            'Optimized Random Forest',
+            metrics
+        )
 
-        # Feature Importance
+        # Feature importance
         if self.feature_names is not None:
 
             importance_df = pd.DataFrame({
@@ -199,12 +364,28 @@ class MLModelTrainer:
             )
 
             print("\nTop 10 Important Features:")
-            print(importance_df.head(10))
 
-    #
-    # XGBOOST
-    #
+            print(
+                importance_df.head(10)
+                .to_string(index=False)
+            )
 
+            os.makedirs(
+                'models/saved',
+                exist_ok=True
+            )
+
+            importance_df.to_csv(
+                'models/saved/'
+                'random_forest_feature_importance.csv',
+                index=False
+            )
+
+            print(
+                "\nFeature importance saved."
+            )
+
+    # XGBoost
     def train_xgboost(self):
 
         print("\nTraining XGBoost...")
@@ -222,7 +403,10 @@ class MLModelTrainer:
             n_jobs=-1
         )
 
-        model.fit(self.X_train, self.y_train)
+        model.fit(
+            self.X_train,
+            self.y_train
+        )
 
         training_time = time.time() - start_time
 
@@ -232,12 +416,12 @@ class MLModelTrainer:
         self.models['XGBoost'] = model
         self.results['XGBoost'] = metrics
 
-        self.print_metrics('XGBoost', metrics)
+        self.print_metrics(
+            'XGBoost',
+            metrics
+        )
 
-    #
-    # SUPPORT VECTOR REGRESSOR
-    #
-
+    # Support Vector Regressor
     def train_svr(self):
 
         print("\nTraining Support Vector Regressor...")
@@ -250,7 +434,10 @@ class MLModelTrainer:
             gamma='scale'
         )
 
-        model.fit(self.X_train, self.y_train)
+        model.fit(
+            self.X_train,
+            self.y_train
+        )
 
         training_time = time.time() - start_time
 
@@ -260,17 +447,17 @@ class MLModelTrainer:
         self.models['SVR'] = model
         self.results['SVR'] = metrics
 
-        self.print_metrics('SVR', metrics)
+        self.print_metrics(
+            'SVR',
+            metrics
+        )
 
-    #
-    # COMPARE MODELS
-    #
-
+    # Compare models
     def compare_models(self):
 
-        print("\n" + "=" * 70)
+        print("\n" + "=" * 85)
         print("MODEL COMPARISON")
-        print("=" * 70)
+        print("=" * 85)
 
         comparison = []
 
@@ -278,106 +465,241 @@ class MLModelTrainer:
 
             comparison.append({
                 'Model': name,
-                'Test R²': metrics['test_r2'],
-                'Test RMSE': metrics['test_rmse'],
-                'Test MAE': metrics['test_mae'],
-                'Training Time': metrics['training_time']
+
+                'Validation R²':
+                    metrics['val_r2'],
+
+                'Validation RMSE':
+                    metrics['val_rmse'],
+
+                'Validation MAE':
+                    metrics['val_mae'],
+
+                'Test R²':
+                    metrics['test_r2'],
+
+                'Test RMSE':
+                    metrics['test_rmse'],
+
+                'Test MAE':
+                    metrics['test_mae'],
+
+                'Training Time':
+                    metrics['training_time']
             })
 
-        comparison_df = pd.DataFrame(comparison)
+        comparison_df = pd.DataFrame(
+            comparison
+        )
 
+        # Select the model using validation R².
+        # The test set is reserved for final evaluation.
         comparison_df = comparison_df.sort_values(
-            by='Test R²',
+            by='Validation R²',
             ascending=False
         )
 
-        print(comparison_df.to_string(index=False))
+        print(
+            comparison_df.to_string(
+                index=False
+            )
+        )
 
-        best_model_name = comparison_df.iloc[0]['Model']
+        best_model_name = (
+            comparison_df.iloc[0]['Model']
+        )
 
-        print(f"\n🏆 Best Model: {best_model_name}")
+        print(
+            "\nBest Model based on "
+            "Validation R²:"
+        )
+
+        print(
+            f"   {best_model_name}"
+        )
+
+        print(
+            f"\nValidation R²: "
+            f"{comparison_df.iloc[0]['Validation R²']:.4f}"
+        )
 
         return comparison_df
 
-    #
-    # SAVE MODELS
-    #
+    # Save trained models
+    def save_models(
+        self,
+        save_path='models/saved/'
+    ):
 
-    def save_models(self, save_path='models/saved/'):
-        """Save trained models"""
-
-        os.makedirs(save_path, exist_ok=True)
-
-        # Save all models
-        for name, model in self.models.items():
-
-            filename = name.lower().replace(' ', '_') + '.pkl'
-
-            full_path = os.path.join(save_path, filename)
-
-            joblib.dump(model, full_path)
-
-            print(f"✅ Saved {name} -> {full_path}")
-
-        # Save best model separately
-        best_model_name = max(
-            self.results,
-            key=lambda x: self.results[x]['test_r2']
+        os.makedirs(
+            save_path,
+            exist_ok=True
         )
 
-        best_model = self.models[best_model_name]
+        # Save all trained models
+        for name, model in self.models.items():
 
-        best_model_path = os.path.join(save_path, 'best_model.pkl')
+            filename = (
+                name.lower()
+                .replace(' ', '_')
+                + '.pkl'
+            )
 
-        joblib.dump(best_model, best_model_path)
+            full_path = os.path.join(
+                save_path,
+                filename
+            )
 
-        print(f"\n🏆 Best Model Saved: {best_model_name}")
-        print(f"📁 Location: {best_model_path}")
+            joblib.dump(
+                model,
+                full_path
+            )
 
+            print(
+                f"Saved {name} -> "
+                f"{full_path}"
+            )
 
-#
-# MAIN EXECUTION
-#
+        # Select the best model using validation R²
+        best_model_name = max(
+            self.results,
+            key=lambda x:
+            self.results[x]['val_r2']
+        )
+
+        best_model = self.models[
+            best_model_name
+        ]
+
+        best_model_path = os.path.join(
+            save_path,
+            'best_model.pkl'
+        )
+
+        joblib.dump(
+            best_model,
+            best_model_path
+        )
+
+        print(
+            f"\nBest Model Saved: "
+            f"{best_model_name}"
+        )
+
+        print(
+            f"Location: "
+            f"{best_model_path}"
+        )
+
+    # Save model comparison
+    def save_comparison(
+        self,
+        comparison_df,
+        save_path='models/saved/'
+    ):
+
+        os.makedirs(
+            save_path,
+            exist_ok=True
+        )
+
+        comparison_path = os.path.join(
+            save_path,
+            'model_comparison.csv'
+        )
+
+        comparison_df.to_csv(
+            comparison_path,
+            index=False
+        )
+
+        print(
+            f"\nModel comparison saved -> "
+            f"{comparison_path}"
+        )
+
 
 if __name__ == '__main__':
 
-    print("\n" + "=" * 70)
-    print("CROP YIELD PREDICTION - MACHINE LEARNING TRAINING")
-    print("=" * 70)
+    print("\n")
+    print("=" * 75)
+    print(
+        "CROP YIELD PREDICTION - "
+        "MACHINE LEARNING TRAINING"
+    )
+    print("=" * 75)
 
     # Load processed dataset
     processed_data = pd.read_csv(
         'data/processed/processed_data.csv'
     )
 
-    print(f"\nProcessed Dataset Shape: {processed_data.shape}")
+    print(
+        f"\nProcessed Dataset Shape: "
+        f"{processed_data.shape}"
+    )
 
-    # Features and target
+    # Separate features and target
     feature_columns = [
-        col for col in processed_data.columns
+        col
+        for col in processed_data.columns
         if col != 'yield_kg_ha'
     ]
 
-    X = processed_data[feature_columns].values
+    X = processed_data[
+        feature_columns
+    ].values
 
-    y = processed_data['yield_kg_ha'].values
+    y = processed_data[
+        'yield_kg_ha'
+    ].values
 
-    # Split dataset
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X,
-        y,
-        test_size=0.3,
-        random_state=42
+    print(
+        f"Number of Features: "
+        f"{len(feature_columns)}"
     )
 
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp,
-        y_temp,
-        test_size=0.5,
-        random_state=42
+    # Split dataset into 70% training,
+    # 15% validation and 15% testing
+    X_train, X_temp, y_train, y_temp = (
+        train_test_split(
+            X,
+            y,
+            test_size=0.30,
+            random_state=42
+        )
     )
 
-    # Create trainer object
+    X_val, X_test, y_val, y_test = (
+        train_test_split(
+            X_temp,
+            y_temp,
+            test_size=0.50,
+            random_state=42
+        )
+    )
+
+    print("\nDataset Split:")
+
+    print(
+        f"Training   : "
+        f"{len(X_train)} "
+        f"({len(X_train) / len(X) * 100:.1f}%)"
+    )
+
+    print(
+        f"Validation : "
+        f"{len(X_val)} "
+        f"({len(X_val) / len(X) * 100:.1f}%)"
+    )
+
+    print(
+        f"Testing    : "
+        f"{len(X_test)} "
+        f"({len(X_test) / len(X) * 100:.1f}%)"
+    )
+
+    # Create trainer
     trainer = MLModelTrainer(
         X_train,
         X_val,
@@ -388,19 +710,27 @@ if __name__ == '__main__':
         feature_names=feature_columns
     )
 
-    # Train Models
+    # Train models
     trainer.train_linear_regression()
     trainer.train_decision_tree()
     trainer.train_random_forest()
     trainer.train_xgboost()
     trainer.train_svr()
 
-    # Compare Models
+    # Compare models
     comparison = trainer.compare_models()
 
-    # Save Models
+    # Save comparison
+    trainer.save_comparison(
+        comparison
+    )
+
+    # Save models
     trainer.save_models()
 
-    print("\n" + "=" * 70)
-    print("TRAINING COMPLETED SUCCESSFULLY")
-    print("=" * 70)
+    print("\n")
+    print("=" * 75)
+    print(
+        "TRAINING COMPLETED SUCCESSFULLY"
+    )
+    print("=" * 75)
